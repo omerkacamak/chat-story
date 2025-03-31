@@ -35,6 +35,18 @@ Proje T3 stack üzerinde (Next.js 14 + Prisma + tRPC + Auth) inşa edilmiştir.
 | Howler.js | Ses oynatıcı |
 | ElevenLabs API | TTS API |
 
+---
+
+## 📝 Geliştirme Günlüğü
+
+### 01.04.2025
+- Landing page tasarımı güncellendi
+  - Chat Story Studio başlığı ve açıklama metni eklendi
+  - Giriş Yap ve Kayıt Ol butonları eklendi
+  - Özellikler grid ile gösterildi
+  - Kullanıcı giriş yapmışsa otomatik olarak /editor sayfasına yönlendirme eklendi
+  - Accessibility özellikleri eklendi (aria-label, tabIndex)
+  - Modern ve responsive tasarım uygulandı
 
 1) Landing Page → Giriş yap
 2) Auth olan kullanıcı → Editor sayfasına geçer

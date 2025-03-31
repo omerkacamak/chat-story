@@ -1,67 +1,60 @@
 import Link from "next/link";
-
-import { LatestPost } from "~/app/_components/post";
+import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 
+  // Eğer kullanıcı giriş yapmışsa editor sayfasına yönlendir
   if (session?.user) {
-    void api.post.getLatest.prefetch();
+    redirect("/editor");
   }
 
   return (
     <HydrateClient>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+          <h1 className="text-5xl font-extrabold tracking-tight text-center sm:text-[5rem]">
+            Chat Story <span className="text-[hsl(280,100%,70%)]">Studio</span>
           </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+          <p className="text-xl text-center max-w-2xl">
+            Kolayca sahte chat senaryoları oluşturun, video arka planı ekleyin ve ElevenLabs ile seslendirin!
+          </p>
+          
+          <div className="flex gap-4">
             <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
+              href="/api/auth/signin"
+              className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+              aria-label="Giriş yap"
+              tabIndex={0}
             >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
+              Giriş Yap
             </Link>
             <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
+              href="/register"
+              className="rounded-full bg-[hsl(280,100%,70%)]/80 px-10 py-3 font-semibold no-underline transition hover:bg-[hsl(280,100%,70%)]"
+              aria-label="Kayıt ol"
+              tabIndex={0}
             >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
+              Kayıt Ol
             </Link>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
 
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 mt-12">
+            <div className="flex flex-col items-center p-6 bg-white/5 rounded-lg">
+              <h3 className="text-xl font-bold mb-2">Chat Senaryoları</h3>
+              <p className="text-center text-gray-300">Sağ ve sol konuşma balonlarıyla gerçekçi chat sahneleri oluşturun</p>
+            </div>
+            <div className="flex flex-col items-center p-6 bg-white/5 rounded-lg">
+              <h3 className="text-xl font-bold mb-2">Video Arka Plan</h3>
+              <p className="text-center text-gray-300">Senaryonuza uygun video arka planı ekleyin</p>
+            </div>
+            <div className="flex flex-col items-center p-6 bg-white/5 rounded-lg">
+              <h3 className="text-xl font-bold mb-2">Sesli Oynatma</h3>
+              <p className="text-center text-gray-300">ElevenLabs ile mesajlarınızı sesli hale getirin</p>
             </div>
           </div>
-
-          {session?.user && <LatestPost />}
         </div>
       </main>
     </HydrateClient>
