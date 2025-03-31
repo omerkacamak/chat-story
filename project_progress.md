@@ -1,0 +1,50 @@
+# Chat Story Studio 📱🎥
+
+Chat Story Studio, kullanıcıların kolayca sahte chat senaryoları oluşturabildiği, 
+video arka planı ve ElevenLabs destekli sesli oynatma yapabilen bir web uygulamasıdır. 
+
+Proje T3 stack üzerinde (Next.js 14 + Prisma + tRPC + Auth) inşa edilmiştir.
+
+---
+
+## 🚀 Özellikler
+
+- Sağ / Sol konuşma balonlarıyla chat sahnesi oluşturma
+- ElevenLabs üzerinden seslendirme (TTS)
+- Video arka plan desteği
+- Mesajları sesle birlikte animasyonlu oynatma
+- Story kaydetme, preview ve export imkanı
+- Üye olma, giriş yapma, sadece giriş yapan kullanıcıların içerik oluşturabilmesi
+- Modern, responsive ve sosyal medya uyumlu
+
+---
+
+## 🛠️ Kullanılan Teknolojiler
+
+| Teknoloji | Amaç |
+|-----------|------|
+| Next.js 14 | React tabanlı SSR / CSR Framework |
+| Tailwind CSS | Utility-first CSS framework |
+| Prisma | PostgreSQL ORM |
+| PostgreSQL | Database |
+| NextAuth | Authentication & Session yönetimi |
+| T3 App | Next.js + tRPC + Prisma + NextAuth Boilerplate |
+| tRPC | Typesafe API Layer |
+| Zustand | Frontend state yönetimi |
+| React Player | Video oynatıcı |
+| Howler.js | Ses oynatıcı |
+| ElevenLabs API | TTS API |
+
+
+1) Landing Page → Giriş yap
+2) Auth olan kullanıcı → Editor sayfasına geçer
+3) Editor:
+     → Mesajlar ekler
+     → Voice ID belirler (Sol ve Sağ)
+     → Video URL ekler
+4) Create → Story database'e kaydedilir
+5) Redirect → Preview Page
+6) Preview:
+     → Video oynar
+     → Mesajlar animasyonlu gelir
+     → TTS ile sesler oynar
