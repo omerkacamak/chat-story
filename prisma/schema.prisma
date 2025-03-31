@@ -14,6 +14,18 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String   @id @default(cuid())
+  name          String?
+  email         String?  @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  chatStories   ChatStory[]
+  posts         Post[]
+}
+
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
@@ -54,15 +66,26 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+
+model ChatStory {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  title       String
+  videoUrl    String
+  leftVoiceId String
+  rightVoiceId String
+  messages    Message[]
+  createdAt   DateTime  @default(now())
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  chatStoryId String
+  chatStory   ChatStory @relation(fields: [chatStoryId], references: [id])
+  side        String
+  content     String
+  order       Int
 }
 
 model VerificationToken {
