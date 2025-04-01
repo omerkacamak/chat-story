@@ -44,13 +44,14 @@ export default function ChatMessage({ message, isLast }: ChatMessageProps) {
         <p className="text-[14.2px] leading-[19px] whitespace-pre-wrap break-words">
           {message.content}
         </p>
-        <div className="text-[11px] text-[#667781] text-right mt-[2px] flex items-center justify-end gap-[2px]">
+        <div className="text-[11px] text-[#667781] text-right mt-[2px] flex items-center justify-end gap-1">
           <span>{time}</span>
           {isLast && (
-            <span className="text-[#53bdeb]">
-              ✓✓
-            </span>
-          )}
+    <span className="text-[#53bdeb] flex items-center">
+        <img src="/check.png" alt="ok" className="w-[14px] h-[14px] mr-1" />
+    </span>
+)}
+
         </div>
       </div>
     </div>
