@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
+import ChatMessage from "~/components/preview/ChatMessage";
+import { ArrowLeft, Camera, Phone, MoreVertical } from "lucide-react";
 
 export default function PreviewPage({
   params,
@@ -12,18 +14,17 @@ export default function PreviewPage({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const storyId = params.id;
 
   const { data: story, isError } = api.story.getById.useQuery(
-    { id: params.id },
-    {
-      onSuccess: () => setIsLoading(false),
-      onError: (err) => {
-        setError(err.message);
-        setIsLoading(false);
-      },
-      retry: 1,
-    }
+    { id: storyId },
+    { retry: false }
   );
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, [story]);
 
   useEffect(() => {
     if (isError) {
@@ -33,9 +34,9 @@ export default function PreviewPage({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
+      <div className="min-h-screen bg-[#eae6df] flex items-center justify-center">
+        <div className="text-[#111b21] text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#111b21] mx-auto mb-4"></div>
           <p className="text-xl">Yükleniyor...</p>
         </div>
       </div>
@@ -44,13 +45,13 @@ export default function PreviewPage({
 
   if (error || !story) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] flex items-center justify-center">
-        <div className="bg-white/10 p-6 rounded-lg max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Hata</h1>
-          <p className="text-red-300 mb-6">{error || "Story bulunamadı"}</p>
+      <div className="min-h-screen bg-[#eae6df] flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg max-w-md w-full text-center shadow-lg">
+          <h1 className="text-2xl font-bold text-[#111b21] mb-4">Hata</h1>
+          <p className="text-red-500 mb-6">{error ?? "Story bulunamadı"}</p>
           <button
             onClick={() => router.push("/editor")}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            className="px-4 py-2 bg-[#00a884] text-white rounded-md hover:bg-[#008f6f] transition-colors"
           >
             Editöre Dön
           </button>
@@ -60,59 +61,84 @@ export default function PreviewPage({
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">{story.title}</h1>
+    <div className="min-h-screen bg-[#eae6df] flex items-center justify-center p-4">
+      {/* Phone Frame */}
+      <div className="w-full max-w-[420px] h-[85vh] bg-white rounded-[3rem] overflow-hidden shadow-2xl relative">
+        {/* Status Bar */}
+        <div className="bg-[#075e54] h-7 flex items-center justify-between px-6 text-white text-xs">
+          <span>5:37</span>
+          <div className="flex items-center gap-1">
+            <span>📶</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        {/* WhatsApp Header */}
+        <div className="bg-[#075e54] px-4 py-2 flex items-center gap-3">
           <button
             onClick={() => router.push("/editor")}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            className="p-1 hover:bg-[#ffffff1a] rounded-full transition-colors text-white"
+            aria-label="Editöre dön"
           >
-            Editöre Dön
+            <ArrowLeft size={20} />
+          </button>
+
+          <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0" />
+
+          <div className="flex-grow">
+            <h1 className="font-medium text-[16px] leading-[21px] text-white">
+              {story.title}
+            </h1>
+            <p className="text-[13px] leading-[18px] text-[#ffffff99]">
+              çevrimiçi
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 text-white">
+            <button className="hover:bg-[#ffffff1a] p-2 rounded-full">
+              <Camera size={20} />
+            </button>
+            <button className="hover:bg-[#ffffff1a] p-2 rounded-full">
+              <Phone size={20} />
+            </button>
+            <button className="hover:bg-[#ffffff1a] p-2 rounded-full">
+              <MoreVertical size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* Chat Area */}
+        <div 
+          className="h-[calc(100%-128px)] overflow-y-auto bg-[url('/wp.jpg')] bg-cover bg-center"
+        >
+          <div className="px-[20px] py-[20px] space-y-[2px]">
+            {story.messages.map((message, index) => (
+              <ChatMessage
+                key={message.id}
+                message={{
+                  id: message.id,
+                  content: message.content,
+                  side: message.side as "left" | "right"
+                }}
+                isLast={index === story.messages.length - 1}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Message Input */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[#f0f2f5] px-4 py-2 flex items-center gap-2">
+          <button className="text-[#54656f] hover:text-[#111b21] p-2">
+            😊
+          </button>
+          <div className="flex-grow bg-white rounded-lg px-4 py-2 text-[#667781]">
+            Mesaj yazın
+          </div>
+          <button className="text-[#54656f] hover:text-[#111b21] p-2">
+            🎤
           </button>
         </div>
-
-        <div className="bg-black/30 rounded-lg overflow-hidden">
-          <div className="aspect-video bg-black relative">
-            {/* Video player will be implemented here */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-white text-lg">Video: {story.videoUrl}</p>
-            </div>
-          </div>
-
-          <div className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Mesajlar</h2>
-            <div className="space-y-4">
-              {story.messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`max-w-[80%] p-3 rounded-lg ${
-                    message.side === "left"
-                      ? "bg-blue-900/50 mr-auto"
-                      : "bg-purple-900/50 ml-auto"
-                  }`}
-                >
-                  <p>{message.content}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-6 bg-white/5 border-t border-white/10">
-            <h2 className="text-xl font-semibold mb-4">Ses Ayarları</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-300">Sol Konuşmacı Sesi:</p>
-                <p className="font-medium">{story.leftVoiceId}</p>
-              </div>
-              <div>
-                <p className="text-gray-300">Sağ Konuşmacı Sesi:</p>
-                <p className="font-medium">{story.rightVoiceId}</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </main>
+    </div>
   );
 }

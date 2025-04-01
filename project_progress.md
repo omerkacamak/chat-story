@@ -57,6 +57,18 @@ Proje T3 stack üzerinde (Next.js 14 + Prisma + tRPC + Auth) inşa edilmiştir.
   - Tüm UI elementleri component'ler üzerinden yönetilmeye başlandı
   - Props yapısı ile dinamik içerik yönetimi sağlandı
   - Kod tekrarı ortadan kaldırıldı (DRY prensibi)
+- Kimlik doğrulama koruması eklendi
+  - Editor ve Preview sayfaları için kimlik doğrulama kontrolü eklendi
+  - Giriş yapmayan kullanıcılar ana sayfaya yönlendirildi
+  - Next.js 14 params Promise yapısı güncellendi
+  - Preview sayfasında React.use() entegrasyonu yapıldı
+- WhatsApp benzeri mesajlaşma arayüzü eklendi
+  - ChatMessage komponenti oluşturuldu
+  - WhatsApp stil mesaj balonları tasarlandı
+  - Saat gösterimi ve okundu tikleri eklendi
+  - Mesajlar için animasyonlu geçişler eklendi
+  - Accessibility özellikleri iyileştirildi
+  - WhatsApp benzeri arka plan ve header tasarımı yapıldı
 
 1) Landing Page → Giriş yap
 2) Auth olan kullanıcı → Editor sayfasına geçer
