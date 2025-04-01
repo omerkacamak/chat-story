@@ -90,69 +90,72 @@ export default function PreviewPage({
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-[400px] h-[700px] relative overflow-hidden">
+      {/* Ana container - Video için geniş */}
+      <div className="w-[800px] h-[700px] relative overflow-hidden">
         {/* Video Arka Plan */}
-        <div className="absolute inset-0 scale-110 origin-center">
+        <div className="absolute inset-0">
           <video
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover scale-[1.15] translate-y-[-5%]"
             src="/video.mp4"
             type="video/mp4"
           />
         </div>
 
-        {/* WhatsApp Arayüzü */}
-        <div className="absolute inset-0 flex flex-col">
-          {/* Header */}
-          <div className="bg-[#075e54] px-4 py-3 flex items-center gap-3">
-            <button
-              onClick={() => router.push("/editor")}
-              className="p-1 hover:bg-[#ffffff1a] rounded-full transition-colors text-white"
-              aria-label="Editöre dön"
+        {/* WhatsApp Arayüzü - Ortada */}
+        <div className="absolute left-1/2 -translate-x-1/2 w-[400px] h-full">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            {/* <div className="bg-[#075e54] px-4 py-3 flex items-center gap-3">
+              <button
+                onClick={() => router.push("/editor")}
+                className="p-1 hover:bg-[#ffffff1a] rounded-full transition-colors text-white"
+                aria-label="Editöre dön"
+              >
+                <ArrowLeft size={20} />
+              </button>
+
+              <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0" />
+
+              <div className="flex-grow">
+                <h1 className="font-medium text-[14px] leading-[18px] text-white">
+                  {story.title}
+                </h1>
+                <p className="text-[12px] leading-[16px] text-[#ffffff99]">
+                  {visibleMessages === story.messages.length ? "çevrimiçi" : "yazıyor..."}
+                </p>
+              </div>
+            </div> */}
+
+            {/* Mesaj Alanı */}
+            <div 
+              ref={chatContainerRef}
+              className="bg-[url('/wp.jpg')] bg-cover bg-center overflow-hidden rounded-3xl"
+              style={{ 
+                height: `${chatHeight}px`,
+                transition: 'height 0.5s ease-out'
+              }}
             >
-              <ArrowLeft size={20} />
-            </button>
-
-            <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0" />
-
-            <div className="flex-grow">
-              <h1 className="font-medium text-[14px] leading-[18px] text-white">
-                {story.title}
-              </h1>
-              <p className="text-[12px] leading-[16px] text-[#ffffff99]">
-                {visibleMessages === story.messages.length ? "çevrimiçi" : "yazıyor..."}
-              </p>
-            </div>
-          </div>
-
-          {/* Mesaj Alanı */}
-          <div 
-            ref={chatContainerRef}
-            className="bg-[url('/wp.jpg')] bg-cover bg-center overflow-hidden"
-            style={{ 
-              height: `${chatHeight}px`,
-              transition: 'height 0.5s ease-out'
-            }}
-          >
-            <div className="p-3 space-y-2 h-full overflow-y-auto">
-              {story.messages.slice(0, visibleMessages).map((message, index) => (
-                <div
-                  key={message.id}
-                  className="animate-fade-in-up"
-                >
-                  <ChatMessage
-                    message={{
-                      id: message.id,
-                      content: message.content,
-                      side: message.side as "left" | "right"
-                    }}
-                    isLast={index === visibleMessages - 1}
-                  />
-                </div>
-              ))}
+              <div className="p-3 space-y-2 h-full overflow-y-auto scrollbar-hide">
+                {story.messages.slice(0, visibleMessages).map((message, index) => (
+                  <div
+                    key={message.id}
+                    className="animate-fade-in-up"
+                  >
+                    <ChatMessage
+                      message={{
+                        id: message.id,
+                        content: message.content,
+                        side: message.side as "left" | "right"
+                      }}
+                      isLast={index === visibleMessages - 1}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
