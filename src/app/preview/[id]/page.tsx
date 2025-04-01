@@ -14,6 +14,7 @@ export default function PreviewPage({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visibleMessages, setVisibleMessages] = useState<number>(0);
   const storyId = params.id;
 
   const { data: story, isError } = api.story.getById.useQuery(
@@ -31,6 +32,23 @@ export default function PreviewPage({
       setError("Story bulunamadı veya erişim izniniz yok");
     }
   }, [isError]);
+
+  // Mesajları sırayla gösterme efekti
+  useEffect(() => {
+    if (story && !isLoading) {
+      const interval = setInterval(() => {
+        setVisibleMessages(prev => {
+          if (prev < story.messages.length) {
+            return prev + 1;
+          }
+          clearInterval(interval);
+          return prev;
+        });
+      }, 1000); // Her mesaj 1 saniye arayla gelecek
+
+      return () => clearInterval(interval);
+    }
+  }, [story, isLoading]);
 
   if (isLoading) {
     return (
@@ -90,7 +108,7 @@ export default function PreviewPage({
               {story.title}
             </h1>
             <p className="text-[13px] leading-[18px] text-[#ffffff99]">
-              çevrimiçi
+              {visibleMessages === story.messages.length ? "çevrimiçi" : "yazıyor..."}
             </p>
           </div>
 
@@ -112,16 +130,20 @@ export default function PreviewPage({
           className="h-[calc(100%-128px)] overflow-y-auto bg-[url('/wp.jpg')] bg-cover bg-center"
         >
           <div className="px-[20px] py-[20px] space-y-[2px]">
-            {story.messages.map((message, index) => (
-              <ChatMessage
+            {story.messages.slice(0, visibleMessages).map((message, index) => (
+              <div
                 key={message.id}
-                message={{
-                  id: message.id,
-                  content: message.content,
-                  side: message.side as "left" | "right"
-                }}
-                isLast={index === story.messages.length - 1}
-              />
+                className="animate-fade-in-up"
+              >
+                <ChatMessage
+                  message={{
+                    id: message.id,
+                    content: message.content,
+                    side: message.side as "left" | "right"
+                  }}
+                  isLast={index === visibleMessages - 1}
+                />
+              </div>
             ))}
           </div>
         </div>

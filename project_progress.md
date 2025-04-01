@@ -69,6 +69,13 @@ Proje T3 stack üzerinde (Next.js 14 + Prisma + tRPC + Auth) inşa edilmiştir.
   - Mesajlar için animasyonlu geçişler eklendi
   - Accessibility özellikleri iyileştirildi
   - WhatsApp benzeri arka plan ve header tasarımı yapıldı
+- Mesaj animasyonları ve sıralı gösterim eklendi
+  - Mesajlar sırayla ekrana geliyor (1 saniye aralıkla)
+  - Her mesaj için fade-in-up animasyonu eklendi
+  - Yazıyor... durumu gösteriliyor
+  - Son mesaj geldiğinde çevrimiçi durumuna geçiyor
+  - globals.css dosyası oluşturuldu ve animasyonlar eklendi
+  - Mavi tikler için özel görsel eklendi
 
 1) Landing Page → Giriş yap
 2) Auth olan kullanıcı → Editor sayfasına geçer
