@@ -106,7 +106,7 @@ export default function PreviewPage({
         </div>
 
         {/* WhatsApp Arayüzü - Ortada */}
-        <div className="absolute left-1/2 -translate-x-1/2 w-[400px] h-full">
+        <div className="absolute left-1/2 -translate-x-1/2 w-[400px] h-full top-10">
           <div className="flex flex-col h-full">
             {/* Header */}
             {/* <div className="bg-[#075e54] px-4 py-3 flex items-center gap-3">
