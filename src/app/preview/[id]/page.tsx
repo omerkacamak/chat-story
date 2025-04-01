@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import ChatMessage from "~/components/preview/ChatMessage";
-import { ArrowLeft, Camera, Phone, MoreVertical } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function PreviewPage({
   params,
@@ -15,7 +15,9 @@ export default function PreviewPage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visibleMessages, setVisibleMessages] = useState<number>(0);
+  const [chatHeight, setChatHeight] = useState<number>(0);
   const storyId = params.id;
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: story, isError } = api.story.getById.useQuery(
     { id: storyId },
@@ -23,7 +25,11 @@ export default function PreviewPage({
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      // Header yüksekliği kadar başlangıç değeri
+      setChatHeight(60);
+    }, 1000);
     return () => clearTimeout(timer);
   }, [story]);
 
@@ -33,18 +39,22 @@ export default function PreviewPage({
     }
   }, [isError]);
 
-  // Mesajları sırayla gösterme efekti
   useEffect(() => {
     if (story && !isLoading) {
       const interval = setInterval(() => {
         setVisibleMessages(prev => {
           if (prev < story.messages.length) {
+            // Her mesajda chat yüksekliğini artır
+            setChatHeight(height => Math.min(height + 60, 500));
+            if (chatContainerRef.current) {
+              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
             return prev + 1;
           }
           clearInterval(interval);
           return prev;
         });
-      }, 1000); // Her mesaj 1 saniye arayla gelecek
+      }, 1000);
 
       return () => clearInterval(interval);
     }
@@ -52,9 +62,9 @@ export default function PreviewPage({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#eae6df] flex items-center justify-center">
-        <div className="text-[#111b21] text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#111b21] mx-auto mb-4"></div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-xl">Yükleniyor...</p>
         </div>
       </div>
@@ -63,7 +73,7 @@ export default function PreviewPage({
 
   if (error || !story) {
     return (
-      <div className="min-h-screen bg-[#eae6df] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="bg-white p-6 rounded-lg max-w-md w-full text-center shadow-lg">
           <h1 className="text-2xl font-bold text-[#111b21] mb-4">Hata</h1>
           <p className="text-red-500 mb-6">{error ?? "Story bulunamadı"}</p>
@@ -79,86 +89,72 @@ export default function PreviewPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#eae6df] flex items-center justify-center p-4">
-      {/* Phone Frame */}
-      <div className="w-full max-w-[420px] h-[85vh] bg-white rounded-[3rem] overflow-hidden shadow-2xl relative">
-        {/* Status Bar */}
-        <div className="bg-[#075e54] h-7 flex items-center justify-between px-6 text-white text-xs">
-          <span>5:37</span>
-          <div className="flex items-center gap-1">
-            <span>📶</span>
-            <span>🔋</span>
-          </div>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="w-[400px] h-[700px] relative overflow-hidden">
+        {/* Video Arka Plan */}
+        <div className="absolute inset-0 scale-110 origin-center">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            src="/video.mp4"
+            type="video/mp4"
+          />
         </div>
 
-        {/* WhatsApp Header */}
-        <div className="bg-[#075e54] px-4 py-2 flex items-center gap-3">
-          <button
-            onClick={() => router.push("/editor")}
-            className="p-1 hover:bg-[#ffffff1a] rounded-full transition-colors text-white"
-            aria-label="Editöre dön"
+        {/* WhatsApp Arayüzü */}
+        <div className="absolute inset-0 flex flex-col">
+          {/* Header */}
+          <div className="bg-[#075e54] px-4 py-3 flex items-center gap-3">
+            <button
+              onClick={() => router.push("/editor")}
+              className="p-1 hover:bg-[#ffffff1a] rounded-full transition-colors text-white"
+              aria-label="Editöre dön"
+            >
+              <ArrowLeft size={20} />
+            </button>
+
+            <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0" />
+
+            <div className="flex-grow">
+              <h1 className="font-medium text-[14px] leading-[18px] text-white">
+                {story.title}
+              </h1>
+              <p className="text-[12px] leading-[16px] text-[#ffffff99]">
+                {visibleMessages === story.messages.length ? "çevrimiçi" : "yazıyor..."}
+              </p>
+            </div>
+          </div>
+
+          {/* Mesaj Alanı */}
+          <div 
+            ref={chatContainerRef}
+            className="bg-[url('/wp.jpg')] bg-cover bg-center overflow-hidden"
+            style={{ 
+              height: `${chatHeight}px`,
+              transition: 'height 0.5s ease-out'
+            }}
           >
-            <ArrowLeft size={20} />
-          </button>
-
-          <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0" />
-
-          <div className="flex-grow">
-            <h1 className="font-medium text-[16px] leading-[21px] text-white">
-              {story.title}
-            </h1>
-            <p className="text-[13px] leading-[18px] text-[#ffffff99]">
-              {visibleMessages === story.messages.length ? "çevrimiçi" : "yazıyor..."}
-            </p>
+            <div className="p-3 space-y-2 h-full overflow-y-auto">
+              {story.messages.slice(0, visibleMessages).map((message, index) => (
+                <div
+                  key={message.id}
+                  className="animate-fade-in-up"
+                >
+                  <ChatMessage
+                    message={{
+                      id: message.id,
+                      content: message.content,
+                      side: message.side as "left" | "right"
+                    }}
+                    isLast={index === visibleMessages - 1}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-
-          <div className="flex items-center gap-4 text-white">
-            <button className="hover:bg-[#ffffff1a] p-2 rounded-full">
-              <Camera size={20} />
-            </button>
-            <button className="hover:bg-[#ffffff1a] p-2 rounded-full">
-              <Phone size={20} />
-            </button>
-            <button className="hover:bg-[#ffffff1a] p-2 rounded-full">
-              <MoreVertical size={20} />
-            </button>
-          </div>
-        </div>
-
-        {/* Chat Area */}
-        <div 
-          className="h-[calc(100%-128px)] overflow-y-auto bg-[url('/wp.jpg')] bg-cover bg-center"
-        >
-          <div className="px-[20px] py-[20px] space-y-[2px]">
-            {story.messages.slice(0, visibleMessages).map((message, index) => (
-              <div
-                key={message.id}
-                className="animate-fade-in-up"
-              >
-                <ChatMessage
-                  message={{
-                    id: message.id,
-                    content: message.content,
-                    side: message.side as "left" | "right"
-                  }}
-                  isLast={index === visibleMessages - 1}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Message Input */}
-        <div className="absolute bottom-0 left-0 right-0 bg-[#f0f2f5] px-4 py-2 flex items-center gap-2">
-          <button className="text-[#54656f] hover:text-[#111b21] p-2">
-            😊
-          </button>
-          <div className="flex-grow bg-white rounded-lg px-4 py-2 text-[#667781]">
-            Mesaj yazın
-          </div>
-          <button className="text-[#54656f] hover:text-[#111b21] p-2">
-            🎤
-          </button>
         </div>
       </div>
     </div>

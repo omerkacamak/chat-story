@@ -76,6 +76,15 @@ Proje T3 stack üzerinde (Next.js 14 + Prisma + tRPC + Auth) inşa edilmiştir.
   - Son mesaj geldiğinde çevrimiçi durumuna geçiyor
   - globals.css dosyası oluşturuldu ve animasyonlar eklendi
   - Mavi tikler için özel görsel eklendi
+- Chat arayüzü dinamik büyüme özelliği eklendi
+  - Her yeni mesajla chat ekranı yukarı doğru büyüyor
+  - Başlangıçta sadece header görünüyor
+  - Mesajlar geldikçe ekran genişliyor
+  - Yumuşak geçiş animasyonları eklendi
+  - Video arka planda tam ekran oynatılıyor
+  - Chat ekranı yarı saydam siyah arka planla video üzerinde
+  - Gereksiz UI elementleri kaldırıldı
+  - Daha kompakt ve modern tasarım uygulandı
 
 1) Landing Page → Giriş yap
 2) Auth olan kullanıcı → Editor sayfasına geçer
